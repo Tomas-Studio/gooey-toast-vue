@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(cp -r /tmp/gooey-scaffold/gooey-toasst-vue/* .)",
+      "Bash(cp /tmp/gooey-scaffold/gooey-toasst-vue/.gitignore .)",
+      "Bash(npm ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(kill %1)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx vue-tsc:*)"
+    ]
+  }
+}
