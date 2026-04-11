@@ -78,6 +78,8 @@ export interface GooeyPromiseData<T> {
   spring?: boolean
   bounce?: number
   showTimestamp?: boolean
+  /** Duration in ms to show the resolved/rejected toast before auto-dismissing (default: 4000) */
+  duration?: number
   onDismiss?: (id: string | number) => void
   onAutoClose?: (id: string | number) => void
 }

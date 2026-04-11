@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { GooeyToastAction, GooeyToastClassNames, GooeyToastPhase, GooeyToastTimings, GooeyToastType, GooeyToastUpdateOptions, ToastContent } from '../types'
 import type { AnimationPresetName } from '../presets'
 import { registerUpdateListener, unregisterUpdateListener, onToastDismissed, registerCallbacks } from '../store/toast-store'

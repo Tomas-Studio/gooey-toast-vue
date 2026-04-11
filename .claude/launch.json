@@ -4,7 +4,7 @@
     {
       "name": "dev",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--port", "5173"],
+      "runtimeArgs": ["vite", "--config", "demo/vite.config.ts", "--port", "5173"],
       "port": 5173
     }
   ]

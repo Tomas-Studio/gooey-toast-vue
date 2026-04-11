@@ -12,7 +12,7 @@ const props = defineProps<{
   toastId: string | number
 }>()
 
-const DEFAULT_EXPANDED_DURATION = 4000
+const DEFAULT_DISMISS_DELAY = 4000
 
 const phase = ref<GooeyToastPhase>('loading')
 const title = ref(props.data.loading)
@@ -20,6 +20,14 @@ const description = ref<ToastContent | undefined>(
   props.data.description?.loading
 )
 const action = ref<GooeyToastAction | undefined>(undefined)
+let dismissTimer: ReturnType<typeof setTimeout> | null = null
+
+function scheduleDismiss() {
+  const delay = props.data.timing?.displayDuration ?? props.data.duration ?? DEFAULT_DISMISS_DELAY
+  dismissTimer = setTimeout(() => {
+    toast.dismiss(props.toastId)
+  }, delay)
+}
 
 // Register callbacks
 onMounted(() => {
@@ -33,6 +41,7 @@ let mounted = true
 onMounted(() => { mounted = true })
 onUnmounted(() => {
   mounted = false
+  if (dismissTimer) clearTimeout(dismissTimer)
   setTimeout(() => {
     if (!mounted) onToastDismissed(props.toastId)
   }, 100)
@@ -48,29 +57,31 @@ onMounted(() => {
   props.promise
     .then((result: any) => {
       const desc = typeof props.data.description?.success === 'function'
-        ? props.data.description.success(result)
+        ? (props.data.description.success as (data: any) => ToastContent)(result)
         : props.data.description?.success
       const resolvedTitle = typeof props.data.success === 'function'
-        ? props.data.success(result)
+        ? (props.data.success as (data: any) => string)(result)
         : props.data.success
       title.value = resolvedTitle
       description.value = desc
       action.value = props.data.action?.success
       phase.value = 'success'
       announce(buildAnnouncementMessage(resolvedTitle, desc), 'polite')
+      scheduleDismiss()
     })
     .catch((err: any) => {
       const desc = typeof props.data.description?.error === 'function'
-        ? props.data.description.error(err)
+        ? (props.data.description.error as (error: unknown) => ToastContent)(err)
         : props.data.description?.error
       const resolvedTitle = typeof props.data.error === 'function'
-        ? props.data.error(err)
+        ? (props.data.error as (error: unknown) => string)(err)
         : props.data.error
       title.value = resolvedTitle
       description.value = desc
       action.value = props.data.action?.error
       phase.value = 'error'
       announce(buildAnnouncementMessage(resolvedTitle, desc), 'assertive')
+      scheduleDismiss()
     })
 })
 </script>

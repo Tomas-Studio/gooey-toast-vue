@@ -4,13 +4,11 @@ import { configStore, announce, type AriaLivePoliteness } from './config-store'
 import type {
   GooeyToastOptions,
   GooeyPromiseData,
-  GooeyToastPhase,
   GooeyToastType,
   GooeyToastUpdateOptions,
   DismissFilter,
   ToastContent,
 } from '../types'
-import type { AnimationPresetName } from '../presets'
 
 const DEFAULT_EXPANDED_DURATION = 4000
 

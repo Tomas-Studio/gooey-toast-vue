@@ -938,7 +938,7 @@ const iconKey = computed(() => isLoading.value ? 'spinner' : effectivePhase.valu
 const currentIcon = computed(() => {
   if (!actionSuccess.value && props.icon) return null // custom icon slot
   if (isLoading.value) return SpinnerIcon
-  return phaseIconMap[effectivePhase.value]
+  return phaseIconMap[effectivePhase.value as Exclude<GooeyToastPhase, 'loading'>]
 })
 
 // Close button position

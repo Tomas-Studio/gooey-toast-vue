@@ -35,12 +35,23 @@
   pointer-events: auto;
 }
 
-/* Hide text content of non-front collapsed toasts, but keep SVG blob visible for stacking effect */
-[data-sonner-toast][data-expanded='false'][data-front='false'] .gooey-content {
+/* Hide text content of non-front collapsed toasts, but keep SVG blob visible for stacking effect.
+   When the stack is expanded (hovered), all toasts should show their content. */
+[data-sonner-toast][data-front='false']:not([data-expanded='true']) .gooey-content {
   opacity: 0;
+  transition: opacity 0.2s ease;
 }
-[data-sonner-toast][data-expanded='false'][data-front='false'] .gooey-closeButton {
+[data-sonner-toast][data-front='false']:not([data-expanded='true']) .gooey-closeButton {
   opacity: 0 !important;
+  transition: opacity 0.2s ease;
+}
+/* Fade content back in when stack expands */
+[data-sonner-toast][data-expanded='true'] .gooey-content {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+[data-sonner-toast][data-expanded='true'] .gooey-closeButton {
+  transition: opacity 0.2s ease;
 }
 
 /* Shorten Sonner's CSS transitions when expanded so our syncSonnerHeights
