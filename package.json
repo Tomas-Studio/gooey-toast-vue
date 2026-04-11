@@ -1,6 +1,6 @@
 {
   "name": "gooey-toast-vue",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A gooey, morphing toast notification library for Vue, powered by motion-v and vue-sonner",
   "type": "module",
   "license": "MIT",
