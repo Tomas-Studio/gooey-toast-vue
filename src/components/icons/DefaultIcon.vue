@@ -3,8 +3,10 @@ withDefaults(defineProps<{ size?: number }>(), { size: 20 })
 </script>
 
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" :width="size" :height="size" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  <svg xmlns="http://www.w3.org/2000/svg" :width="size" :height="size" viewBox="0 0 24 24">
+    <g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2">
+      <path stroke-linecap="round" d="M19 18V9.5a7 7 0 1 0-14 0V18m15.5 0h-17"/>
+      <path d="M13.5 20a1.5 1.5 0 0 1-1.5 1.5M10.5 20a1.5 1.5 0 0 0 1.5 1.5m0 0V20"/>
+    </g>
   </svg>
 </template>

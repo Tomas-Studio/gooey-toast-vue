@@ -497,7 +497,7 @@ const closeButtonPositions: Array<{ label: string; value: boolean | 'top-left' |
               </linearGradient>
             </defs>
           </svg>
-          <span>gooey-toasst-vue</span>
+          <span>gooey-toast-vue</span>
         </a>
 
         <nav class="desktop-nav">
