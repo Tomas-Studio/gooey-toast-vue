@@ -20,7 +20,7 @@ const typeHandlers: Record<string, () => void> = {
 </script>
 
 <template>
-  <div id="examples" class="flex flex-col gap-6 md-lg:sticky md-lg:top-[calc(56px+24px)] md-lg:self-start md-lg:max-h-[calc(100vh-56px-48px)] md-lg:overflow-y-auto">
+  <div id="examples" class="flex flex-col gap-6 md-lg:sticky md-lg:top-20 md-lg:self-start md-lg:max-h-[calc(100vh-56px-48px)] md-lg:overflow-y-auto">
     <h2 class="font-display text-xl font-bold">Examples</h2>
 
     <!-- Toast Types -->
