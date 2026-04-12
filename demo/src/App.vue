@@ -22,7 +22,7 @@ const heroVisible = ref(true)
     <HeroSection @update:hero-visible="heroVisible = $event" />
 
     <!-- Two-column layout: Examples + Builder -->
-    <section class="grid grid-cols-1 md-lg:grid-cols-[5fr_7fr] gap-8 md-lg:gap-12 max-w-[1200px] mx-auto px-6 max-sm:px-4 pb-16 pt-12 border-t border-border">
+    <section class="grid grid-cols-1 md-lg:grid-cols-[5fr_7fr] gap-8 md-lg:gap-12 max-w-300 mx-auto px-6 max-sm:px-4 pb-16 pt-12 border-t border-border">
       <ExamplesPanel />
       <ToastBuilder />
     </section>

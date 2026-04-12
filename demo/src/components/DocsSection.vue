@@ -186,7 +186,7 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
 </script>
 
 <template>
-  <section id="docs" class="border-t border-border max-w-[1200px] mx-auto px-6 py-16 max-sm:px-4 max-sm:py-10">
+  <section id="docs" class="border-t border-border max-w-300 mx-auto px-6 py-16 max-sm:px-4 max-sm:py-10">
     <h2 class="font-display text-[28px] max-sm:text-2xl font-bold mb-10">Documentation</h2>
 
     <!-- 01. Quick Start -->

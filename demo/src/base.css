@@ -1,22 +1,8 @@
-/* Base reset & globals that Tailwind can't handle inline */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* Globals that complement Tailwind's preflight */
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-body {
-  font-family: var(--font-body);
-  background: var(--color-bg);
-  color: var(--color-text);
-  min-height: 100vh;
-  line-height: 1.6;
 }
 
 /* Scrollbar */

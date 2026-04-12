@@ -1,10 +1,18 @@
 import { gooeyToast } from 'gooey-toast-vue'
-import type { GooeyToastOptions, GooeyToastType } from 'gooey-toast-vue'
+import type { GooeyToastOptions, GooeyToastType, GooeyPromiseData } from 'gooey-toast-vue'
 
 export const DEMO_DEFAULTS: GooeyToastOptions = {
   spring: true,
   bounce: 0.3,
   timing: { displayDuration: 5000 },
+}
+
+// Pick only the fields that exist on GooeyPromiseData (excludes description, icon, id, showProgress)
+// so spreading this into promise calls is type-safe.
+const PROMISE_DEFAULTS: Pick<GooeyPromiseData<unknown>, 'spring' | 'bounce' | 'timing'> = {
+  spring: DEMO_DEFAULTS.spring,
+  bounce: DEMO_DEFAULTS.bounce,
+  timing: DEMO_DEFAULTS.timing,
 }
 
 export const typeColors: Record<GooeyToastType, { bg: string; fg: string }> = {
@@ -88,7 +96,7 @@ export function exPromiseSuccess() {
     loading: 'Saving changes...',
     success: (d) => `${d.name} saved`,
     error: 'Save failed',
-    ...DEMO_DEFAULTS,
+    ...PROMISE_DEFAULTS,
   })
 }
 export function exPromiseError() {
@@ -96,7 +104,7 @@ export function exPromiseError() {
     loading: 'Connecting...',
     success: 'Connected',
     error: (e) => (e as Error).message,
-    ...DEMO_DEFAULTS,
+    ...PROMISE_DEFAULTS,
   })
 }
 export function exPromiseSuccessExpanded() {
@@ -109,7 +117,7 @@ export function exPromiseSuccessExpanded() {
       success: 'Your backup is ready for download.',
       error: 'There was an error creating your backup.',
     },
-    ...DEMO_DEFAULTS,
+    ...PROMISE_DEFAULTS,
   })
 }
 export function exPromiseErrorExpanded() {
@@ -122,7 +130,7 @@ export function exPromiseErrorExpanded() {
       success: 'Your file is now available.',
       error: 'Please check your connection and try again.',
     },
-    ...DEMO_DEFAULTS,
+    ...PROMISE_DEFAULTS,
   })
 }
 

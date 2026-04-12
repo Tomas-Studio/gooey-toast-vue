@@ -39,7 +39,7 @@ function scrollTo(id: string) {
       </a>
 
       <!-- Desktop Nav -->
-      <nav class="hidden md-lg:flex items-center gap-0.5 bg-card rounded-full p-[3px]">
+      <nav class="hidden md-lg:flex items-center gap-0.5 bg-card rounded-full p-0.75">
         <a
           v-for="item in [{ label: 'Examples', id: 'examples' }, { label: 'Builder', id: 'builder' }, { label: 'Docs', id: 'docs' }]"
           :key="item.id"

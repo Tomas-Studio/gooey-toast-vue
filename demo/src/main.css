@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "./base.css";
+@import "./base.css" layer(base);
 
 @theme {
   --color-bg: #FAFAF7;
