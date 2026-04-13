@@ -13,7 +13,6 @@ const typeHandlers: Record<string, () => void> = {
   default: exDefault, success: exSuccess, error: exError, warning: exWarning, info: exInfo,
 }
 
-// ---- Code samples ----
 const codeQuickStart = `import { GooeyToaster, gooeyToast } from 'gooey-toast-vue'
 
 // In your template
@@ -122,7 +121,6 @@ export default defineNuxtPlugin((nuxtApp) => {
   <GooeyToaster position="bottom-right" />
 </template>`
 
-// ---- Table data ----
 const timingsRows = [
   { property: 'displayDuration', type: 'number', default: '4000', description: 'Time in ms before the toast auto-closes' },
 ]

@@ -22,7 +22,6 @@ const pillActive = 'bg-accent text-surface'
 
     <div class="bg-surface border border-border rounded-[14px] p-6 max-sm:p-4 shadow-sm flex flex-col gap-5">
 
-      <!-- Position -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Position</label>
         <div class="flex flex-wrap gap-1.5">
@@ -34,7 +33,6 @@ const pillActive = 'bg-accent text-surface'
         </div>
       </div>
 
-      <!-- Type -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Type</label>
         <div class="flex flex-wrap gap-1.5">
@@ -47,7 +45,6 @@ const pillActive = 'bg-accent text-surface'
         </div>
       </div>
 
-      <!-- Title -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Title</label>
         <input
@@ -57,7 +54,6 @@ const pillActive = 'bg-accent text-surface'
         />
       </div>
 
-      <!-- Description -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary flex items-center gap-2">
           Description
@@ -71,7 +67,6 @@ const pillActive = 'bg-accent text-surface'
         />
       </div>
 
-      <!-- Action Button -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary flex items-center gap-2">
           Action Button
@@ -86,13 +81,12 @@ const pillActive = 'bg-accent text-surface'
         />
       </div>
 
-      <!-- Style -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Style</label>
         <div class="flex items-center gap-4 flex-wrap">
           <div class="flex items-center gap-2">
             <span class="text-[12px] text-text-muted">Fill</span>
-            <input v-model="bFillColor" type="color" />
+            <input v-model="bFillColor" type="color" class="size-5.5" />
           </div>
           <div class="flex items-center gap-2">
             <span class="text-[12px] text-text-muted">Border</span>
@@ -101,7 +95,7 @@ const pillActive = 'bg-accent text-surface'
           <template v-if="bHasBorder">
             <div class="flex items-center gap-2">
               <span class="text-[12px] text-text-muted">Color</span>
-              <input v-model="bBorderColor" type="color" />
+              <input v-model="bBorderColor" type="color" class="size-5.5" />
             </div>
             <div class="flex items-center gap-2">
               <span class="text-[12px] text-text-muted">Width</span>
@@ -116,15 +110,13 @@ const pillActive = 'bg-accent text-surface'
         </div>
       </div>
 
-      <!-- Timing -->
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-3">
         <label class="text-[13px] font-medium text-text-secondary">
           Display Duration <span class="font-mono text-text-muted ml-1">{{ bDisplayDuration }}s</span>
         </label>
-        <input v-model.number="bDisplayDuration" type="range" min="1" max="20" step="1" class="flex-1" />
+        <input v-model.number="bDisplayDuration" type="range" min="1" max="20" step="1" class="range-input flex-1" />
       </div>
 
-      <!-- Animation Preset -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Animation Preset</label>
         <div class="flex flex-wrap gap-1.5">
@@ -136,19 +128,17 @@ const pillActive = 'bg-accent text-surface'
         </div>
       </div>
 
-      <!-- Spring Effect -->
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-3">
         <label class="text-[13px] font-medium text-text-secondary flex items-center gap-2">
           Spring Effect
           <ToggleSwitch v-model="bSpring" />
+          <span v-if="bSpring" class="text-[12px] text-text-muted font-mono">Bounce {{ bBounce }}</span>
         </label>
         <div v-if="bSpring" class="flex items-center gap-3">
-          <span class="text-[12px] text-text-muted font-mono">Bounce {{ bBounce }}</span>
-          <input v-model.number="bBounce" type="range" min="0.05" max="0.8" step="0.05" class="flex-1" />
+          <input v-model.number="bBounce" type="range" min="0.05" max="0.8" step="0.05" class="range-input flex-1" />
         </div>
       </div>
 
-      <!-- Theme -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Theme</label>
         <div class="flex flex-wrap gap-1.5">
@@ -157,25 +147,21 @@ const pillActive = 'bg-accent text-surface'
         </div>
       </div>
 
-      <!-- Show Progress -->
       <div class="flex items-center gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Show Progress</label>
         <ToggleSwitch v-model="bShowProgress" />
       </div>
 
-      <!-- Close on Escape -->
       <div class="flex items-center gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Close on Escape</label>
         <ToggleSwitch v-model="bCloseOnEscape" />
       </div>
 
-      <!-- Show Timestamp -->
       <div class="flex items-center gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Show Timestamp</label>
         <ToggleSwitch v-model="bShowTimestamp" />
       </div>
 
-      <!-- Close Button -->
       <div class="flex flex-col gap-2">
         <label class="text-[13px] font-medium text-text-secondary">Close Button</label>
         <div class="flex flex-wrap gap-1.5">
@@ -187,7 +173,6 @@ const pillActive = 'bg-accent text-surface'
         </div>
       </div>
 
-      <!-- Fire button -->
       <button
         class="w-full bg-accent text-surface rounded-[10px] flex items-center justify-center gap-2 py-3 px-6 text-sm font-semibold transition-all hover:bg-[#333] hover:shadow-md active:scale-[0.98] cursor-pointer"
         @click="fireBuilderToast"
@@ -195,8 +180,44 @@ const pillActive = 'bg-accent text-surface'
         Fire Toast
       </button>
 
-      <!-- Generated code -->
       <CodeBlock :code="generatedCode" label="Generated Code" />
     </div>
   </div>
 </template>
+
+<style scoped>
+.range-input {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.range-input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.range-input::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-top: -5px;
+}
+
+.range-input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+}
+</style>
