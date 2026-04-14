@@ -1,5 +1,17 @@
 # gooey-toast-vue
 
+## 0.3.1
+
+### Patch Changes
+
+- Improve Firefox browser compatibility and styling
+
+  - Add Firefox color input styling with `::-moz-color-swatch` pseudo-element
+  - Improve range input appearance with gradients, shadows, and background colors for both Firefox and WebKit browsers
+  - Configure Google Fonts imports (Limelight, Fascinate, Megrim) with proper font-display swap
+  - Fix CSS syntax errors and improve cross-browser consistency
+  - Add CSS variable support for enhanced theming capabilities
+
 ## 0.3.0
 
 ### Minor Changes
