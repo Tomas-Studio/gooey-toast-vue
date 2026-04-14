@@ -1,5 +1,11 @@
 # gooey-toast-vue
 
+## 0.2.3
+
+### Patch Changes
+
+- new build
+
 ## 0.2.2
 
 ### Patch Changes
