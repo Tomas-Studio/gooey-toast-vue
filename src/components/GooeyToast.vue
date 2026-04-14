@@ -716,7 +716,6 @@ const progressDurationStyle = computed(() => ({
     @touchmove="handleTouchMove"
     @touchend="handleTouchEnd"
   >
-    <!-- SVG background -->
     <svg class="gooey-blobSvg" aria-hidden="true">
       <path
         ref="pathRef"
@@ -726,7 +725,6 @@ const progressDurationStyle = computed(() => ({
       />
     </svg>
 
-    <!-- Close button -->
     <button
       v-if="showCloseButton && effectivePhase !== 'loading'"
       :class="['gooey-closeButton', closeButtonRightClass]"
@@ -746,10 +744,8 @@ const progressDurationStyle = computed(() => ({
       </svg>
     </button>
 
-    <!-- Content -->
     <div ref="contentRef" :class="contentClasses" :style="contentStyle">
       <div ref="headerRef" :class="headerClasses">
-        <!-- Icon -->
         <div :class="['gooey-iconWrapper', classNames?.icon]">
           <AnimatePresence mode="wait">
             <Motion.div
@@ -767,16 +763,13 @@ const progressDurationStyle = computed(() => ({
             </Motion.div>
           </AnimatePresence>
         </div>
-        <!-- Title -->
         <span :class="['gooey-title', classNames?.title]">{{ effectiveTitle }}</span>
-        <!-- Inline timestamp for simple toasts -->
         <span
           v-if="!hasDescription && !hasAction && !actionSuccess && showTimestamp"
           class="gooey-timestamp"
         >{{ timestampStr }}</span>
       </div>
 
-      <!-- Description -->
       <AnimatePresence>
         <Motion.div
           v-if="showBody && hasDescription && !dismissing"
@@ -798,7 +791,6 @@ const progressDurationStyle = computed(() => ({
         </Motion.div>
       </AnimatePresence>
 
-      <!-- Timestamp for body toasts without description -->
       <AnimatePresence>
         <Motion.div
           v-if="showBody && !hasDescription && hasAction && !dismissing && showTimestamp"
@@ -814,7 +806,6 @@ const progressDurationStyle = computed(() => ({
         </Motion.div>
       </AnimatePresence>
 
-      <!-- Action button -->
       <AnimatePresence>
         <Motion.div
           v-if="showBody && hasAction && effectiveAction && !dismissing"
@@ -835,7 +826,6 @@ const progressDurationStyle = computed(() => ({
         </Motion.div>
       </AnimatePresence>
 
-      <!-- Progress bar -->
       <div
         v-if="showProgress"
         :key="progressKey"

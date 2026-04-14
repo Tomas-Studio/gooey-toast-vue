@@ -55,7 +55,6 @@ watch(() => configStore.containerHovered, (hovered) => {
   }
 })
 
-// Register callbacks
 onMounted(() => {
   if (props.data.onDismiss || props.data.onAutoClose) {
     registerCallbacks(props.toastId, props.data.onDismiss, props.data.onAutoClose)

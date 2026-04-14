@@ -10,7 +10,7 @@ onMounted(() => {
   unsubscribe = subscribeAnnouncements(({ message, politeness }) => {
     if (politeness === 'assertive') {
       assertiveMessage.value = ''
-      // Force reflow to trigger screen reader re-announcement
+
       requestAnimationFrame(() => {
         assertiveMessage.value = message
       })

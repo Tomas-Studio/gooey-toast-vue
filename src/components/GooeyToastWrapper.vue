@@ -35,7 +35,6 @@ const currentAction = ref<GooeyToastAction | undefined>(props.action)
 const currentIcon = ref<ToastContent | undefined>(props.icon)
 const currentShowTimestamp = ref(props.showTimestamp ?? true)
 
-// Register callbacks
 onMounted(() => {
   if (props.onDismiss || props.onAutoClose) {
     registerCallbacks(props.toastId, props.onDismiss, props.onAutoClose)
