@@ -64,6 +64,7 @@
     "vue": ">=3.3.0"
   },
   "dependencies": {
+    "@vueuse/core": "^14.2.1",
     "motion": "^12.38.0",
     "motion-v": "^2.2.0",
     "vue-sonner": "^2.0.9"

@@ -8,9 +8,11 @@ import type { AnimationPresetName } from '../presets'
 import { animationPresets } from '../presets'
 import { configStore, subscribeContainerHovered } from '../store/config-store'
 import { morphPath, morphPathCenter } from '../math/morph-path'
-import { squishSpring } from '../math/squish-spring'
-import { PH, DEFAULT_DISPLAY_DURATION, DEFAULT_EXPAND_DUR, DEFAULT_COLLAPSE_DUR, SMOOTH_EASE, SQUISH_DEBOUNCE_MS, MOUNT_SQUISH_DELAY_MS, EXPAND_SQUISH_DELAY_MS, EXPAND_DELAY_MS, DISMISS_AFTER_COLLAPSE_MS, ACTION_SUCCESS_DISMISS_MS, PILL_RESIZE_DURATION, PILL_BOUNCE_FACTOR, MORPH_EXPAND_DURATION, MORPH_COLLAPSE_DURATION, SQUISH_COMPRESS_Y_BASE, SQUISH_EXPAND_X_BASE, SQUISH_COMPRESS_Y_COLLAPSE, SQUISH_EXPAND_X_COLLAPSE, HEADER_SQUISH_SCALE, HEADER_SQUISH_PUSH_Y, SWIPE_THRESHOLD, SWIPE_OPACITY_FACTOR, ERROR_SHAKE_DURATION, ERROR_SHAKE_FREQUENCY, ERROR_SHAKE_AMPLITUDE } from '../constants'
+import { PH, DEFAULT_DISPLAY_DURATION, SMOOTH_EASE, EXPAND_DELAY_MS, DISMISS_AFTER_COLLAPSE_MS, ACTION_SUCCESS_DISMISS_MS, PILL_RESIZE_DURATION, PILL_BOUNCE_FACTOR, MORPH_EXPAND_DURATION, MORPH_COLLAPSE_DURATION, SWIPE_THRESHOLD, SWIPE_OPACITY_FACTOR } from '../constants'
 import { usePrefersReducedMotion } from '../composables/usePrefersReducedMotion'
+import { useSwipeToDismiss } from '../composables/useSwipeToDismiss'
+import { syncSonnerHeights, useSonnerSync } from '../composables/useSonnerSync'
+import { useSquishAnimations } from '../composables/useSquishAnimations'
 import { DefaultIcon, SuccessIcon, ErrorIcon, WarningIcon, InfoIcon, SpinnerIcon } from './icons'
 
 const props = withDefaults(defineProps<{
@@ -98,8 +100,6 @@ const actionSuccess = ref<string | null>(null)
 const dismissing = ref(false)
 const progressKey = ref(0)
 const hovered = ref(false)
-const hoveredRef = { value: false }
-const containerHoveredRef = { value: configStore.containerHovered }
 const containerHovered = ref(configStore.containerHovered)
 const collapsingRef = { value: false }
 const preDismissRef = { value: false }
@@ -127,9 +127,6 @@ const contentRef = ref<HTMLDivElement | null>(null)
 // Animation controllers
 let morphCtrl: ReturnType<typeof animate> | null = null
 let pillResizeCtrl: ReturnType<typeof animate> | null = null
-let headerSquishCtrl: ReturnType<typeof animate> | null = null
-let blobSquishCtrl: ReturnType<typeof animate> | null = null
-let shakeCtrl: ReturnType<typeof animate> | null = null
 
 // Animated state (not reactive -- avoids re-renders during animation)
 let morphT = 0
@@ -153,68 +150,18 @@ const remainingRef = { value: null as number | null }
 const timerStartRef = { value: 0 }
 const progressDelayRef = { value: 0 }
 
-// Squish timing
-let lastSquishTime = 0
-let mountSquished = false
-
-// ---------------------------------------------------------------------------
-// syncSonnerHeights — recalculates CSS variables on sibling toast <li> elements
-// ---------------------------------------------------------------------------
-function syncSonnerHeights(wrapperEl: HTMLElement | null, includeOffsets = false) {
-  if (!wrapperEl) return
-  const li = wrapperEl.closest('[data-sonner-toast]') as HTMLElement | null
-  if (!li?.parentElement) return
-
-  const ol = li.parentElement
-  const toasts = Array.from(
-    ol.querySelectorAll(':scope > [data-sonner-toast]')
-  ) as HTMLElement[]
-
-  if (toasts.length === 0) return
-
-  const heights = toasts.map(t => {
-    if (t.getAttribute('data-visible') === 'false') return 0
-    const content = t.firstElementChild as HTMLElement | null
-    const h = content ? content.getBoundingClientRect().height : 0
-    return h > 0 ? h : PH
-  })
-
-  const isExpandedState = includeOffsets && toasts[0]?.getAttribute('data-expanded') === 'true'
-  if (isExpandedState) {
-    for (const t of toasts) t.style.setProperty('transition', 'none', 'important')
-  }
-
-  for (let i = 0; i < toasts.length; i++) {
-    toasts[i].style.setProperty('--initial-height', `${heights[i]}px`)
-  }
-
-  if (!includeOffsets) {
-    if (isExpandedState) {
-      for (const t of toasts) t.style.removeProperty('transition')
-    }
-    return
-  }
-
-  const gapStr = getComputedStyle(ol).getPropertyValue('--gap').trim()
-  const gap = parseFloat(gapStr) || 14
-
-  let runningOffset = 0
-  for (let i = toasts.length - 1; i >= 0; i--) {
-    if (toasts[i].getAttribute('data-visible') === 'false') {
-      toasts[i].style.setProperty('--offset', '0px')
-      continue
-    }
-    toasts[i].style.setProperty('--offset', `${runningOffset}px`)
-    if (i > 0) {
-      runningOffset += heights[i] + gap
-    }
-  }
-
-  if (isExpandedState) {
-    void ol.offsetHeight
-    for (const t of toasts) t.style.removeProperty('transition')
-  }
+// Tracked pending timeouts for cleanup on unmount
+const pendingTimeouts = new Set<ReturnType<typeof setTimeout>>()
+function safeTimeout(fn: () => void, ms: number): ReturnType<typeof setTimeout> {
+  const id = setTimeout(() => { pendingTimeouts.delete(id); fn() }, ms)
+  pendingTimeouts.add(id)
+  return id
 }
+
+// Use composables
+const { swipeOffsetX, handleTouchStart, handleTouchMove, handleTouchEnd } =
+  useSwipeToDismiss(() => props.toastId)
+useSonnerSync(wrapperRef)
 
 // ---------------------------------------------------------------------------
 // flush — push current animated state to SVG DOM + constrain wrapper/content
@@ -321,92 +268,35 @@ function measure() {
   dims.value = { pw, bw, th }
 }
 
-// ---------------------------------------------------------------------------
-// Landing squish animation
-// ---------------------------------------------------------------------------
-function triggerLandingSquish(phase: 'expand' | 'collapse' | 'mount' = 'mount') {
-  if (!wrapperRef.value || prefersReducedMotion.value || !useSpring.value) return
-  const now = Date.now()
-  if (now - lastSquishTime < SQUISH_DEBOUNCE_MS) return
-  lastSquishTime = now
-  blobSquishCtrl?.stop()
-  const el = wrapperRef.value
-  const springConfig = phase === 'collapse'
-    ? squishSpring(DEFAULT_COLLAPSE_DUR, DEFAULT_COLLAPSE_DUR, bounceVal.value)
-    : squishSpring(DEFAULT_EXPAND_DUR, DEFAULT_EXPAND_DUR, bounceVal.value)
-  const bScale = bounceVal.value / 0.4
-  const compressY = (phase === 'collapse' ? SQUISH_COMPRESS_Y_COLLAPSE : SQUISH_COMPRESS_Y_BASE) * bScale
-  const expandX = (phase === 'collapse' ? SQUISH_EXPAND_X_COLLAPSE : SQUISH_EXPAND_X_BASE) * bScale
-  blobSquishCtrl = animate(0, 1, {
-    ...springConfig,
-    onUpdate: (v: number) => {
-      const intensity = Math.sin(v * Math.PI)
-      const sy = 1 - compressY * intensity
-      const sx = 1 + expandX * intensity
-      const mirror = el.style.transform?.includes('scaleX(-1)') ? 'scaleX(-1) ' : ''
-      el.style.transformOrigin = 'center top'
-      el.style.transform = mirror + `scaleX(${sx}) scaleY(${sy})`
-    },
-    onComplete: () => {
-      const right = el.style.transform?.includes('scaleX(-1)')
-      el.style.transform = right ? 'scaleX(-1)' : ''
-      el.style.transformOrigin = ''
-    },
-  })
-}
+const hasDims = computed(() => dims.value.pw > 0 && dims.value.bw > 0 && dims.value.th > 0)
 
-// ---------------------------------------------------------------------------
-// MutationObserver for Sonner height sync
-// ---------------------------------------------------------------------------
-const observerRegistry = new Map<Element, {
-  observer: MutationObserver
-  callbacks: Set<() => void>
-}>()
-
-function registerSonnerObserver(ol: Element, callback: () => void) {
-  let entry = observerRegistry.get(ol)
-  if (!entry) {
-    const callbacks = new Set<() => void>()
-    let applying = false
-    const observer = new MutationObserver(() => {
-      if (applying) return
-      applying = true
-      requestAnimationFrame(() => {
-        callbacks.forEach(cb => cb())
-        requestAnimationFrame(() => { applying = false })
-      })
-    })
-    observer.observe(ol, {
-      attributes: true,
-      attributeFilter: ['style', 'data-visible'],
-      subtree: true,
-      childList: true,
-    })
-    entry = { observer, callbacks }
-    observerRegistry.set(ol, entry)
-  }
-  entry.callbacks.add(callback)
-  return () => {
-    entry!.callbacks.delete(callback)
-    if (entry!.callbacks.size === 0) {
-      entry!.observer.disconnect()
-      observerRegistry.delete(ol)
-    }
-  }
-}
+// Squish animations composable
+const { triggerLandingSquish, cleanup: cleanupSquish } = useSquishAnimations({
+  wrapperRef,
+  headerRef,
+  useSpring,
+  bounceVal,
+  prefersReducedMotion,
+  showBody,
+  dismissing,
+  actionSuccess,
+  hovered,
+  hasDims,
+  isExpanded,
+  phase: () => props.phase,
+  preDismissRef,
+  safeTimeout,
+})
 
 // ---------------------------------------------------------------------------
 // Lifecycle
 // ---------------------------------------------------------------------------
 let resizeObserver: ResizeObserver | null = null
-let unregisterSonner: (() => void) | null = null
-let expandObserver: MutationObserver | null = null
 let measureTimeout: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {
   // Subscribe to container hover
   unsubContainerHover = subscribeContainerHovered((h) => {
-    containerHoveredRef.value = h
     containerHovered.value = h
   })
 
@@ -418,7 +308,7 @@ onMounted(() => {
     // Trigger initial expand if description/action present at mount time
     if (isExpanded.value) {
       const delay = prefersReducedMotion.value ? 0 : EXPAND_DELAY_MS
-      setTimeout(() => { showBody.value = true }, delay)
+      safeTimeout(() => { showBody.value = true }, delay)
     }
   })
 
@@ -427,48 +317,18 @@ onMounted(() => {
     resizeObserver = new ResizeObserver(measure)
     resizeObserver.observe(contentRef.value)
   }
-
-  // Sonner height sync observer
-  if (wrapperRef.value) {
-    const ol = wrapperRef.value.closest('[data-sonner-toast]')?.parentElement
-    if (ol) {
-      unregisterSonner = registerSonnerObserver(ol, () => {
-        syncSonnerHeights(wrapperRef.value, true)
-      })
-
-      expandObserver = new MutationObserver((mutations) => {
-        for (const m of mutations) {
-          if (
-            m.type === 'attributes' &&
-            m.attributeName === 'data-expanded' &&
-            (m.target as HTMLElement).getAttribute('data-expanded') === 'true'
-          ) {
-            syncSonnerHeights(wrapperRef.value, true)
-            break
-          }
-        }
-      })
-      expandObserver.observe(ol, {
-        attributes: true,
-        attributeFilter: ['data-expanded'],
-        subtree: true,
-      })
-    }
-  }
 })
 
 onUnmounted(() => {
   unsubContainerHover?.()
   resizeObserver?.disconnect()
-  unregisterSonner?.()
-  expandObserver?.disconnect()
   morphCtrl?.stop()
   pillResizeCtrl?.stop()
-  headerSquishCtrl?.stop()
-  blobSquishCtrl?.stop()
-  shakeCtrl?.stop()
+  cleanupSquish()
   if (measureTimeout) clearTimeout(measureTimeout)
   if (dismissTimer) clearTimeout(dismissTimer)
+  pendingTimeouts.forEach(clearTimeout)
+  pendingTimeouts.clear()
 })
 
 // ---------------------------------------------------------------------------
@@ -479,12 +339,10 @@ watch(
   () => {
     nextTick(() => {
       measure()
-      setTimeout(measure, 100)
+      safeTimeout(measure, 100)
     })
   },
 )
-
-const hasDims = computed(() => dims.value.pw > 0 && dims.value.bw > 0 && dims.value.th > 0)
 
 // Handle dims changes: pill resize or direct update
 watch(
@@ -546,51 +404,11 @@ watch(
   { immediate: true },
 )
 
-// Entry squish
-watch(hasDims, (val) => {
-  if (val && !mountSquished && !isExpanded.value) {
-    mountSquished = true
-    setTimeout(() => triggerLandingSquish(), MOUNT_SQUISH_DELAY_MS)
-  }
-})
-
-// Squish on expand (showBody false→true)
-let prevShowBody = false
-watch(showBody, (val) => {
-  if (!prevShowBody && val && !hoveredRef.value) {
-    setTimeout(() => triggerLandingSquish('expand'), EXPAND_SQUISH_DELAY_MS)
-  }
-  prevShowBody = val
-})
-
-// Error shake
-let prevPhase = props.phase
-watch(() => props.phase, (phase) => {
-  if (phase === 'error' && prevPhase !== 'error' && !dismissing.value && wrapperRef.value && !prefersReducedMotion.value) {
-    shakeCtrl?.stop()
-    const el = wrapperRef.value
-    const mirror = el.style.transform?.includes('scaleX(-1)') ? 'scaleX(-1) ' : ''
-    shakeCtrl = animate(0, 1, {
-      duration: ERROR_SHAKE_DURATION,
-      ease: 'easeOut' as any,
-      onUpdate: (v: number) => {
-        const decay = 1 - v
-        const shake = Math.sin(v * Math.PI * ERROR_SHAKE_FREQUENCY) * decay * ERROR_SHAKE_AMPLITUDE
-        el.style.transform = mirror + `translateX(${shake}px)`
-      },
-      onComplete: () => {
-        el.style.transform = mirror.trim() || ''
-      },
-    })
-  }
-  prevPhase = phase
-})
-
 // Phase 1: expand (delay showBody) or collapse (reverse morph)
 watch(isExpanded, (expanded) => {
   if (expanded) {
     const delay = prefersReducedMotion.value ? 0 : EXPAND_DELAY_MS
-    setTimeout(() => { showBody.value = true }, delay)
+    safeTimeout(() => { showBody.value = true }, delay)
     return
   }
 
@@ -669,13 +487,13 @@ watch(
     progressDelayRef.value = Math.max(fullDelay, 0)
     if (fullDelay <= 0) return
 
-    if (hoveredRef.value || containerHoveredRef.value) return
+    if (hovered.value || containerHovered.value) return
 
     const delay = remainingRef.value ?? fullDelay
     timerStartRef.value = Date.now()
 
     dismissTimer = setTimeout(() => {
-      if (hoveredRef.value || containerHoveredRef.value) {
+      if (hovered.value || containerHovered.value) {
         const elapsed = Date.now() - timerStartRef.value
         remainingRef.value = Math.max(0, delay - elapsed)
         return
@@ -738,8 +556,8 @@ watch(
 // Dismiss from Sonner after collapse completes
 watch([dismissing, showBody], ([d, sb]) => {
   if (!props.toastId || !d || sb) return
-  setTimeout(() => {
-    if (!hoveredRef.value && !containerHoveredRef.value) {
+  safeTimeout(() => {
+    if (!hovered.value && !containerHovered.value) {
       sonnerToast.dismiss(props.toastId!)
     }
   }, DISMISS_AFTER_COLLAPSE_MS)
@@ -748,7 +566,7 @@ watch([dismissing, showBody], ([d, sb]) => {
 // Dismiss after action success
 watch([actionSuccess, showBody], ([as, sb]) => {
   if (!props.toastId || !as || sb) return
-  setTimeout(() => sonnerToast.dismiss(props.toastId!), ACTION_SUCCESS_DISMISS_MS)
+  safeTimeout(() => sonnerToast.dismiss(props.toastId!), ACTION_SUCCESS_DISMISS_MS)
 })
 
 // Phase 2: morph from pill → blob
@@ -798,79 +616,6 @@ watch(showBody, (val) => {
   })
 })
 
-// Header elastic squish
-let headerSquished = false
-watch([showBody, dismissing, actionSuccess], ([sb, d, as]) => {
-  if (!headerRef.value || prefersReducedMotion.value) return
-  headerSquishCtrl?.stop()
-  const el = headerRef.value
-
-  if (sb && !d && !as) {
-    if (!useSpring.value) return
-    headerSquished = true
-    headerSquishCtrl = animate(0, 1, {
-      ...squishSpring(DEFAULT_EXPAND_DUR, DEFAULT_EXPAND_DUR, bounceVal.value),
-      onUpdate: (v: number) => {
-        const scale = 1 - HEADER_SQUISH_SCALE * v
-        const pushY = v * HEADER_SQUISH_PUSH_Y
-        el.style.transform = `scale(${scale}) translateY(${pushY}px)`
-      },
-    })
-  } else if (headerSquished) {
-    headerSquished = false
-    const isSpringCollapse = !preDismissRef.value && useSpring.value
-    const transition = isSpringCollapse
-      ? squishSpring(DEFAULT_COLLAPSE_DUR, DEFAULT_COLLAPSE_DUR, bounceVal.value)
-      : { duration: DEFAULT_COLLAPSE_DUR * 0.5, ease: SMOOTH_EASE }
-    headerSquishCtrl = animate(1, 0, {
-      ...transition,
-      onUpdate: (v: number) => {
-        const scale = 1 - HEADER_SQUISH_SCALE * v
-        const pushY = v * HEADER_SQUISH_PUSH_Y
-        el.style.transform = `scale(${scale}) translateY(${pushY}px)`
-      },
-      onComplete: () => {
-        el.style.transform = ''
-      },
-    })
-  }
-})
-
-// Swipe-to-dismiss
-let swipeStart: { x: number; y: number } | null = null
-const swipeOffsetX = ref(0)
-let isSwiping = false
-
-function handleTouchStart(e: TouchEvent) {
-  if (!configStore.swipeToDismiss) return
-  const touch = e.touches[0]
-  swipeStart = { x: touch.clientX, y: touch.clientY }
-  isSwiping = false
-}
-
-function handleTouchMove(e: TouchEvent) {
-  if (!swipeStart || !configStore.swipeToDismiss) return
-  const touch = e.touches[0]
-  const dx = touch.clientX - swipeStart.x
-  const dy = touch.clientY - swipeStart.y
-  if (!isSwiping && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10) {
-    swipeStart = null
-    return
-  }
-  if (!isSwiping && Math.abs(dx) > 10) isSwiping = true
-  if (isSwiping) swipeOffsetX.value = dx
-}
-
-function handleTouchEnd() {
-  if (!configStore.swipeToDismiss) { swipeStart = null; return }
-  if (isSwiping && Math.abs(swipeOffsetX.value) >= SWIPE_THRESHOLD && props.toastId) {
-    sonnerToast.dismiss(props.toastId)
-  }
-  swipeStart = null
-  isSwiping = false
-  swipeOffsetX.value = 0
-}
-
 // Action button handler
 async function handleActionClick() {
   if (!effectiveAction.value) return
@@ -884,8 +629,8 @@ async function handleActionClick() {
   } catch { /* onClick errors shouldn't trigger success state */ }
 }
 
-function handleMouseEnter() { hoveredRef.value = true; hovered.value = true }
-function handleMouseLeave() { hoveredRef.value = false; hovered.value = false }
+function handleMouseEnter() { hovered.value = true }
+function handleMouseLeave() { hovered.value = false }
 
 // Computed styles
 const wrapperStyle = computed(() => {
@@ -1083,7 +828,6 @@ const progressDurationStyle = computed(() => ({
           <button
             :class="['gooey-actionButton', actionColorMap[effectivePhase], classNames?.actionButton]"
             type="button"
-            :aria-label="effectiveAction.label"
             @click="handleActionClick"
           >
             {{ effectiveAction.label }}

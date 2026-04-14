@@ -54,6 +54,7 @@ watch(
 let handleKeyDown: ((e: KeyboardEvent) => void) | null = null
 
 watch(() => props.closeOnEscape, (enabled) => {
+  if (typeof document === 'undefined') return
   if (handleKeyDown) {
     document.removeEventListener('keydown', handleKeyDown)
     handleKeyDown = null
@@ -61,9 +62,16 @@ watch(() => props.closeOnEscape, (enabled) => {
   if (enabled !== false) {
     handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        const recentId = getMostRecentActiveId()
-        if (recentId != null) {
-          gooeyToast.dismiss(recentId)
+        // Try to dismiss the focused toast first
+        const focused = document.activeElement?.closest('[data-sonner-toast]')
+        const focusedId = focused?.getAttribute('data-id') ?? focused?.getAttribute('data-toast-id')
+        if (focusedId) {
+          gooeyToast.dismiss(focusedId)
+        } else {
+          const recentId = getMostRecentActiveId()
+          if (recentId != null) {
+            gooeyToast.dismiss(recentId)
+          }
         }
       }
     }

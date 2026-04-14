@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { toast } from 'vue-sonner'
-import type { GooeyToastPhase, GooeyToastAction, GooeyPromiseData, ToastContent } from '../types'
+import type { GooeyToastPhase, GooeyToastAction, GooeyPromiseData, ToastContent, GooeyToastType } from '../types'
 import { onToastDismissed, registerCallbacks } from '../store/toast-store'
 import { announce, buildAnnouncementMessage, configStore } from '../store/config-store'
 import GooeyToast from './GooeyToast.vue'
@@ -15,6 +15,10 @@ const props = defineProps<{
 const DEFAULT_DISMISS_DELAY = 4000
 
 const phase = ref<GooeyToastPhase>('loading')
+const effectiveType = computed<GooeyToastType>(() => {
+  if (phase.value === 'loading') return 'info'
+  return phase.value as GooeyToastType
+})
 const title = ref(props.data.loading)
 const description = ref<ToastContent | undefined>(
   props.data.description?.loading
@@ -69,7 +73,6 @@ onUnmounted(() => {
   }, 100)
 })
 
-// Handle promise resolution
 onMounted(() => {
   props.promise
     .then((result: any) => {
@@ -107,7 +110,7 @@ onMounted(() => {
   <GooeyToast
     :title="title"
     :description="description"
-    :type="phase === 'loading' ? 'info' : (phase as any)"
+    :type="effectiveType"
     :action="action"
     :phase="phase"
     :class-names="data.classNames"

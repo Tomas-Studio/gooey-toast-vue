@@ -8,8 +8,10 @@ import type {
   GooeyToastUpdateOptions,
   DismissFilter,
 } from '../types'
+import { DEFAULT_EXPANDED_DURATION } from '../constants'
 
-const DEFAULT_EXPANDED_DURATION = 4000
+let _idSeq = 0
+function nextId(): string { return `gooey-${++_idSeq}` }
 
 function getAnnouncePoliteness(type: GooeyToastType): AriaLivePoliteness {
   return type === 'error' || type === 'warning' ? 'assertive' : 'polite'
@@ -146,7 +148,7 @@ function createGooeyToast(
   const baseDuration = options?.timing?.displayDuration ?? options?.duration ?? (options?.description ? DEFAULT_EXPANDED_DURATION : undefined)
   const duration = hasExpandedContent ? Infinity : baseDuration
 
-  const toastId = options?.id ?? Math.random().toString(36).slice(2)
+  const toastId = options?.id ?? nextId()
 
   const create = () => {
     if (!_GooeyToastWrapper) {
@@ -266,7 +268,7 @@ function promiseGooeyToast<T>(promise: Promise<T>, data: GooeyPromiseData<T>) {
     data.duration = Math.max(500, data.duration)
   }
 
-  const id = Math.random().toString(36).slice(2)
+  const id = nextId()
 
   announce(buildAnnouncementMessage(data.loading, data.description?.loading), 'polite')
 

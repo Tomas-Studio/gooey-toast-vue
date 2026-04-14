@@ -1,3 +1,108 @@
+/* Gooey Toast Theme Variables */
+:root {
+  /* Type colors */
+  --gooey-color-default: #555555;
+  --gooey-color-success: #4CAF50;
+  --gooey-color-error: #E53935;
+  --gooey-color-warning: #C49000;
+  --gooey-color-info: #1E88E5;
+
+  /* Action button text colors */
+  --gooey-action-default: #555555;
+  --gooey-action-success: #4CAF50;
+  --gooey-action-error: #E53935;
+  --gooey-action-warning: #C49000;
+  --gooey-action-info: #1E88E5;
+
+  /* Action button background colors */
+  --gooey-action-bg-default: #E8E8E8;
+  --gooey-action-bg-default-hover: #DCDCDC;
+  --gooey-action-bg-default-active: #D0D0D0;
+  --gooey-action-bg-success: #C8E6C9;
+  --gooey-action-bg-success-hover: #A5D6A7;
+  --gooey-action-bg-success-active: #81C784;
+  --gooey-action-bg-error: #FFCDD2;
+  --gooey-action-bg-error-hover: #EF9A9A;
+  --gooey-action-bg-error-active: #E57373;
+  --gooey-action-bg-warning: #FFECB3;
+  --gooey-action-bg-warning-hover: #FFE082;
+  --gooey-action-bg-warning-active: #FFD54F;
+  --gooey-action-bg-info: #BBDEFB;
+  --gooey-action-bg-info-hover: #90CAF9;
+  --gooey-action-bg-info-active: #64B5F6;
+
+  /* Progress bar colors */
+  --gooey-progress-default: #999999;
+  --gooey-progress-success: #4CAF50;
+  --gooey-progress-error: #E53935;
+  --gooey-progress-warning: #C49000;
+  --gooey-progress-info: #1E88E5;
+
+  /* Text colors */
+  --gooey-text-primary: #1a1a1a;
+  --gooey-text-secondary: #555555;
+  --gooey-text-muted: #999999;
+
+  /* Description */
+  --gooey-description-color: #444444;
+
+  /* Timestamp */
+  --gooey-timestamp-color: #999999;
+
+  /* Close button */
+  --gooey-close-button-color: #444444;
+}
+
+/* ============================================
+   Dark mode — override custom properties only
+   ============================================ */
+.gooey-wrapper[data-theme="dark"] {
+  /* Type colors (lighter variants) */
+  --gooey-color-default: #cccccc;
+  --gooey-color-success: #66BB6A;
+  --gooey-color-error: #EF5350;
+  --gooey-color-warning: #FFB300;
+  --gooey-color-info: #42A5F5;
+
+  /* Action button text colors */
+  --gooey-action-default: #cccccc;
+  --gooey-action-success: #66BB6A;
+  --gooey-action-error: #EF5350;
+  --gooey-action-warning: #FFB300;
+  --gooey-action-info: #42A5F5;
+
+  /* Action button background colors */
+  --gooey-action-bg-default: #3a3a3a;
+  --gooey-action-bg-default-hover: #444444;
+  --gooey-action-bg-default-active: #4e4e4e;
+  --gooey-action-bg-success: #1b5e20;
+  --gooey-action-bg-success-hover: #2e7d32;
+  --gooey-action-bg-success-active: #388e3c;
+  --gooey-action-bg-error: #b71c1c;
+  --gooey-action-bg-error-hover: #c62828;
+  --gooey-action-bg-error-active: #d32f2f;
+  --gooey-action-bg-warning: #4a3800;
+  --gooey-action-bg-warning-hover: #5c4600;
+  --gooey-action-bg-warning-active: #6e5400;
+  --gooey-action-bg-info: #0d47a1;
+  --gooey-action-bg-info-hover: #1565c0;
+  --gooey-action-bg-info-active: #1976d2;
+
+  /* Progress bar colors */
+  --gooey-progress-default: #888888;
+  --gooey-progress-success: #66BB6A;
+  --gooey-progress-error: #EF5350;
+  --gooey-progress-warning: #FFB300;
+  --gooey-progress-info: #42A5F5;
+
+  /* Text / description / timestamp */
+  --gooey-description-color: #e0e0e0;
+  --gooey-timestamp-color: #777777;
+
+  /* Close button */
+  --gooey-close-button-color: #e0e0e0;
+}
+
 /* Spinner animation */
 .gooey-spinnerSpin {
   animation: gooey-spin 1s linear infinite;
@@ -142,17 +247,17 @@
   padding: 0 4px 0 2px;
 }
 
-.gooey-titleDefault { color: #555; }
-.gooey-titleSuccess { color: #4CAF50; }
-.gooey-titleError { color: #E53935; }
-.gooey-titleWarning { color: #C49000; }
-.gooey-titleInfo { color: #1E88E5; }
-.gooey-titleLoading { color: #555; }
+.gooey-titleDefault { color: var(--gooey-color-default); }
+.gooey-titleSuccess { color: var(--gooey-color-success); }
+.gooey-titleError   { color: var(--gooey-color-error); }
+.gooey-titleWarning { color: var(--gooey-color-warning); }
+.gooey-titleInfo    { color: var(--gooey-color-info); }
+.gooey-titleLoading { color: var(--gooey-color-default); }
 
 .gooey-timestamp {
   font-size: 11px;
   font-weight: 400;
-  color: #999;
+  color: var(--gooey-timestamp-color);
   white-space: nowrap;
   line-height: 1;
   padding-left: 6px;
@@ -161,7 +266,7 @@
 .gooey-description {
   font-size: 13px;
   font-weight: 400;
-  color: #444;
+  color: var(--gooey-description-color);
   line-height: 1.55;
   margin-top: 16px;
   overflow: hidden;
@@ -199,39 +304,39 @@
 }
 
 .gooey-actionDefault {
-  background: #E8E8E8;
-  color: #555;
+  background: var(--gooey-action-bg-default);
+  color: var(--gooey-action-default);
 }
-.gooey-actionDefault:hover { background: #DCDCDC; }
-.gooey-actionDefault:active { background: #D0D0D0; }
+.gooey-actionDefault:hover  { background: var(--gooey-action-bg-default-hover); }
+.gooey-actionDefault:active { background: var(--gooey-action-bg-default-active); }
 
 .gooey-actionSuccess {
-  background: #C8E6C9;
-  color: #4CAF50;
+  background: var(--gooey-action-bg-success);
+  color: var(--gooey-action-success);
 }
-.gooey-actionSuccess:hover { background: #A5D6A7; }
-.gooey-actionSuccess:active { background: #81C784; }
+.gooey-actionSuccess:hover  { background: var(--gooey-action-bg-success-hover); }
+.gooey-actionSuccess:active { background: var(--gooey-action-bg-success-active); }
 
 .gooey-actionError {
-  background: #FFCDD2;
-  color: #E53935;
+  background: var(--gooey-action-bg-error);
+  color: var(--gooey-action-error);
 }
-.gooey-actionError:hover { background: #EF9A9A; }
-.gooey-actionError:active { background: #E57373; }
+.gooey-actionError:hover  { background: var(--gooey-action-bg-error-hover); }
+.gooey-actionError:active { background: var(--gooey-action-bg-error-active); }
 
 .gooey-actionWarning {
-  background: #FFECB3;
-  color: #C49000;
+  background: var(--gooey-action-bg-warning);
+  color: var(--gooey-action-warning);
 }
-.gooey-actionWarning:hover { background: #FFE082; }
-.gooey-actionWarning:active { background: #FFD54F; }
+.gooey-actionWarning:hover  { background: var(--gooey-action-bg-warning-hover); }
+.gooey-actionWarning:active { background: var(--gooey-action-bg-warning-active); }
 
 .gooey-actionInfo {
-  background: #BBDEFB;
-  color: #1E88E5;
+  background: var(--gooey-action-bg-info);
+  color: var(--gooey-action-info);
 }
-.gooey-actionInfo:hover { background: #90CAF9; }
-.gooey-actionInfo:active { background: #64B5F6; }
+.gooey-actionInfo:hover  { background: var(--gooey-action-bg-info-hover); }
+.gooey-actionInfo:active { background: var(--gooey-action-bg-info-active); }
 
 /* ============================================
    Progress countdown bar
@@ -261,11 +366,11 @@
   to { transform: scaleX(0); }
 }
 
-.gooey-progressDefault { background: #999; }
-.gooey-progressSuccess { background: #4CAF50; }
-.gooey-progressError { background: #E53935; }
-.gooey-progressWarning { background: #C49000; }
-.gooey-progressInfo { background: #1E88E5; }
+.gooey-progressDefault { background: var(--gooey-progress-default); }
+.gooey-progressSuccess  { background: var(--gooey-progress-success); }
+.gooey-progressError    { background: var(--gooey-progress-error); }
+.gooey-progressWarning  { background: var(--gooey-progress-warning); }
+.gooey-progressInfo     { background: var(--gooey-progress-info); }
 
 /* ============================================
    Dark mode
@@ -275,64 +380,9 @@
           drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
 }
 
-.gooey-wrapper[data-theme="dark"] .gooey-titleDefault { color: #ccc; }
-.gooey-wrapper[data-theme="dark"] .gooey-titleSuccess { color: #66BB6A; }
-.gooey-wrapper[data-theme="dark"] .gooey-titleError { color: #EF5350; }
-.gooey-wrapper[data-theme="dark"] .gooey-titleWarning { color: #FFB300; }
-.gooey-wrapper[data-theme="dark"] .gooey-titleInfo { color: #42A5F5; }
-.gooey-wrapper[data-theme="dark"] .gooey-titleLoading { color: #ccc; }
-
-.gooey-wrapper[data-theme="dark"] .gooey-timestamp {
-  color: #777;
-}
-
-.gooey-wrapper[data-theme="dark"] .gooey-description {
-  color: #e0e0e0;
-}
-
-.gooey-wrapper[data-theme="dark"] .gooey-actionDefault {
-  background: #3a3a3a;
-  color: #ccc;
-}
-.gooey-wrapper[data-theme="dark"] .gooey-actionDefault:hover { background: #444; }
-.gooey-wrapper[data-theme="dark"] .gooey-actionDefault:active { background: #4e4e4e; }
-
-.gooey-wrapper[data-theme="dark"] .gooey-actionSuccess {
-  background: #1b5e20;
-  color: #66BB6A;
-}
-.gooey-wrapper[data-theme="dark"] .gooey-actionSuccess:hover { background: #2e7d32; }
-.gooey-wrapper[data-theme="dark"] .gooey-actionSuccess:active { background: #388e3c; }
-
-.gooey-wrapper[data-theme="dark"] .gooey-actionError {
-  background: #b71c1c;
-  color: #EF5350;
-}
-.gooey-wrapper[data-theme="dark"] .gooey-actionError:hover { background: #c62828; }
-.gooey-wrapper[data-theme="dark"] .gooey-actionError:active { background: #d32f2f; }
-
-.gooey-wrapper[data-theme="dark"] .gooey-actionWarning {
-  background: #4a3800;
-  color: #FFB300;
-}
-.gooey-wrapper[data-theme="dark"] .gooey-actionWarning:hover { background: #5c4600; }
-.gooey-wrapper[data-theme="dark"] .gooey-actionWarning:active { background: #6e5400; }
-
-.gooey-wrapper[data-theme="dark"] .gooey-actionInfo {
-  background: #0d47a1;
-  color: #42A5F5;
-}
-.gooey-wrapper[data-theme="dark"] .gooey-actionInfo:hover { background: #1565c0; }
-.gooey-wrapper[data-theme="dark"] .gooey-actionInfo:active { background: #1976d2; }
-
 .gooey-wrapper[data-theme="dark"] .gooey-progressWrapper {
   background: rgba(255, 255, 255, 0.1);
 }
-.gooey-wrapper[data-theme="dark"] .gooey-progressDefault { background: #888; }
-.gooey-wrapper[data-theme="dark"] .gooey-progressSuccess { background: #66BB6A; }
-.gooey-wrapper[data-theme="dark"] .gooey-progressError { background: #EF5350; }
-.gooey-wrapper[data-theme="dark"] .gooey-progressWarning { background: #FFB300; }
-.gooey-wrapper[data-theme="dark"] .gooey-progressInfo { background: #42A5F5; }
 
 /* ---------------------------------------------------------------------------
    Close button
@@ -350,7 +400,7 @@
   padding: 0;
   border-style: solid;
   border-radius: 50%;
-  color: #444;
+  color: var(--gooey-close-button-color);
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.15s ease, transform 0.15s ease;
@@ -382,6 +432,5 @@
   transform: scale(0.95);
 }
 .gooey-wrapper[data-theme="dark"] .gooey-closeButton {
-  color: #e0e0e0;
   box-shadow: 0 1px 4px rgba(255, 255, 255, 0.25);
 }
