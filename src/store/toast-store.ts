@@ -1,24 +1,18 @@
 import { markRaw, type Component } from 'vue'
 import { toast } from 'vue-sonner'
-import { configStore, announce, type AriaLivePoliteness } from './config-store'
+import { configStore, announce, buildAnnouncementMessage, type AriaLivePoliteness } from './config-store'
 import type {
   GooeyToastOptions,
   GooeyPromiseData,
   GooeyToastType,
   GooeyToastUpdateOptions,
   DismissFilter,
-  ToastContent,
 } from '../types'
 
 const DEFAULT_EXPANDED_DURATION = 4000
 
 function getAnnouncePoliteness(type: GooeyToastType): AriaLivePoliteness {
   return type === 'error' || type === 'warning' ? 'assertive' : 'polite'
-}
-
-function buildAnnouncementMessage(title: string, description?: ToastContent): string {
-  if (!description || typeof description !== 'string') return title
-  return `${title}: ${description}`
 }
 
 // ---------------------------------------------------------------------------
@@ -118,6 +112,28 @@ export function setPromiseToastWrapperComponent(comp: Component) {
 }
 
 // ---------------------------------------------------------------------------
+// Input validation
+// ---------------------------------------------------------------------------
+function validateOptions(options: GooeyToastOptions | undefined): GooeyToastOptions | undefined {
+  if (!options) return options
+  const validated = { ...options }
+  if (validated.bounce !== undefined) {
+    validated.bounce = Math.max(0, Math.min(0.8, validated.bounce))
+  }
+  if (validated.timing !== undefined) {
+    const timing = { ...validated.timing }
+    if (timing.displayDuration !== undefined) {
+      timing.displayDuration = Math.max(500, timing.displayDuration)
+    }
+    validated.timing = timing
+  }
+  if (validated.duration !== undefined) {
+    validated.duration = Math.max(500, validated.duration)
+  }
+  return validated
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 function createGooeyToast(
@@ -125,6 +141,7 @@ function createGooeyToast(
   type: GooeyToastType,
   options?: GooeyToastOptions,
 ) {
+  options = validateOptions(options)
   const hasExpandedContent = Boolean(options?.description || options?.action)
   const baseDuration = options?.timing?.displayDuration ?? options?.duration ?? (options?.description ? DEFAULT_EXPANDED_DURATION : undefined)
   const duration = hasExpandedContent ? Infinity : baseDuration
@@ -234,6 +251,21 @@ function dismissGooeyToast(idOrFilter?: string | number | DismissFilter) {
 }
 
 function promiseGooeyToast<T>(promise: Promise<T>, data: GooeyPromiseData<T>) {
+  data = { ...data }
+  if (data.bounce !== undefined) {
+    data.bounce = Math.max(0, Math.min(0.8, data.bounce))
+  }
+  if (data.timing !== undefined) {
+    const timing = { ...data.timing }
+    if (timing.displayDuration !== undefined) {
+      timing.displayDuration = Math.max(500, timing.displayDuration)
+    }
+    data.timing = timing
+  }
+  if (data.duration !== undefined) {
+    data.duration = Math.max(500, data.duration)
+  }
+
   const id = Math.random().toString(36).slice(2)
 
   announce(buildAnnouncementMessage(data.loading, data.description?.loading), 'polite')

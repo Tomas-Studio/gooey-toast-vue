@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { toast } from 'vue-sonner'
 import type { GooeyToastPhase, GooeyToastAction, GooeyPromiseData, ToastContent } from '../types'
 import { onToastDismissed, registerCallbacks } from '../store/toast-store'
-import { announce } from '../store/config-store'
+import { announce, buildAnnouncementMessage, configStore } from '../store/config-store'
 import GooeyToast from './GooeyToast.vue'
 
 const props = defineProps<{
@@ -21,13 +21,35 @@ const description = ref<ToastContent | undefined>(
 )
 const action = ref<GooeyToastAction | undefined>(undefined)
 let dismissTimer: ReturnType<typeof setTimeout> | null = null
+let dismissStartTime = 0
+let dismissRemaining: number | null = null
 
 function scheduleDismiss() {
+  if (dismissTimer) clearTimeout(dismissTimer)
   const delay = props.data.timing?.displayDuration ?? props.data.duration ?? DEFAULT_DISMISS_DELAY
+  const remaining = dismissRemaining ?? delay
+  dismissStartTime = Date.now()
   dismissTimer = setTimeout(() => {
     toast.dismiss(props.toastId)
-  }, delay)
+  }, remaining)
 }
+
+function pauseDismiss() {
+  if (!dismissTimer) return
+  clearTimeout(dismissTimer)
+  dismissTimer = null
+  const elapsed = Date.now() - dismissStartTime
+  dismissRemaining = Math.max(0, (dismissRemaining ?? (props.data.timing?.displayDuration ?? props.data.duration ?? DEFAULT_DISMISS_DELAY)) - elapsed)
+}
+
+watch(() => configStore.containerHovered, (hovered) => {
+  if (phase.value === 'loading') return
+  if (hovered) {
+    pauseDismiss()
+  } else {
+    scheduleDismiss()
+  }
+})
 
 // Register callbacks
 onMounted(() => {
@@ -46,11 +68,6 @@ onUnmounted(() => {
     if (!mounted) onToastDismissed(props.toastId)
   }, 100)
 })
-
-function buildAnnouncementMessage(t: string, d?: ToastContent): string {
-  if (!d || typeof d !== 'string') return t
-  return `${t}: ${d}`
-}
 
 // Handle promise resolution
 onMounted(() => {

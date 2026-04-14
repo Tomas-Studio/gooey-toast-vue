@@ -9,7 +9,7 @@ import { animationPresets } from '../presets'
 import { configStore, subscribeContainerHovered } from '../store/config-store'
 import { morphPath, morphPathCenter } from '../math/morph-path'
 import { squishSpring } from '../math/squish-spring'
-import { PH, DEFAULT_DISPLAY_DURATION, DEFAULT_EXPAND_DUR, DEFAULT_COLLAPSE_DUR, SMOOTH_EASE } from '../constants'
+import { PH, DEFAULT_DISPLAY_DURATION, DEFAULT_EXPAND_DUR, DEFAULT_COLLAPSE_DUR, SMOOTH_EASE, SQUISH_DEBOUNCE_MS, MOUNT_SQUISH_DELAY_MS, EXPAND_SQUISH_DELAY_MS, EXPAND_DELAY_MS, DISMISS_AFTER_COLLAPSE_MS, ACTION_SUCCESS_DISMISS_MS, PILL_RESIZE_DURATION, PILL_BOUNCE_FACTOR, MORPH_EXPAND_DURATION, MORPH_COLLAPSE_DURATION, SQUISH_COMPRESS_Y_BASE, SQUISH_EXPAND_X_BASE, SQUISH_COMPRESS_Y_COLLAPSE, SQUISH_EXPAND_X_COLLAPSE, HEADER_SQUISH_SCALE, HEADER_SQUISH_PUSH_Y, SWIPE_THRESHOLD, SWIPE_OPACITY_FACTOR, ERROR_SHAKE_DURATION, ERROR_SHAKE_FREQUENCY, ERROR_SHAKE_AMPLITUDE } from '../constants'
 import { usePrefersReducedMotion } from '../composables/usePrefersReducedMotion'
 import { DefaultIcon, SuccessIcon, ErrorIcon, WarningIcon, InfoIcon, SpinnerIcon } from './icons'
 
@@ -327,7 +327,7 @@ function measure() {
 function triggerLandingSquish(phase: 'expand' | 'collapse' | 'mount' = 'mount') {
   if (!wrapperRef.value || prefersReducedMotion.value || !useSpring.value) return
   const now = Date.now()
-  if (now - lastSquishTime < 300) return
+  if (now - lastSquishTime < SQUISH_DEBOUNCE_MS) return
   lastSquishTime = now
   blobSquishCtrl?.stop()
   const el = wrapperRef.value
@@ -335,8 +335,8 @@ function triggerLandingSquish(phase: 'expand' | 'collapse' | 'mount' = 'mount') 
     ? squishSpring(DEFAULT_COLLAPSE_DUR, DEFAULT_COLLAPSE_DUR, bounceVal.value)
     : squishSpring(DEFAULT_EXPAND_DUR, DEFAULT_EXPAND_DUR, bounceVal.value)
   const bScale = bounceVal.value / 0.4
-  const compressY = (phase === 'collapse' ? 0.035 : 0.12) * bScale
-  const expandX = (phase === 'collapse' ? 0.018 : 0.06) * bScale
+  const compressY = (phase === 'collapse' ? SQUISH_COMPRESS_Y_COLLAPSE : SQUISH_COMPRESS_Y_BASE) * bScale
+  const expandX = (phase === 'collapse' ? SQUISH_EXPAND_X_COLLAPSE : SQUISH_EXPAND_X_BASE) * bScale
   blobSquishCtrl = animate(0, 1, {
     ...springConfig,
     onUpdate: (v: number) => {
@@ -417,7 +417,7 @@ onMounted(() => {
 
     // Trigger initial expand if description/action present at mount time
     if (isExpanded.value) {
-      const delay = prefersReducedMotion.value ? 0 : 330
+      const delay = prefersReducedMotion.value ? 0 : EXPAND_DELAY_MS
       setTimeout(() => { showBody.value = true }, delay)
     }
   })
@@ -531,7 +531,7 @@ watch(
       triggerLandingSquish('expand')
     }
     const pillResizeTransition = useSpring.value
-      ? { type: 'spring' as const, duration: 0.5, bounce: bounceVal.value * 0.875 }
+      ? { type: 'spring' as const, duration: PILL_RESIZE_DURATION, bounce: bounceVal.value * PILL_BOUNCE_FACTOR }
       : { duration: 0.4, ease: SMOOTH_EASE }
     pillResizeCtrl = animate(0, 1, {
       ...pillResizeTransition,
@@ -550,7 +550,7 @@ watch(
 watch(hasDims, (val) => {
   if (val && !mountSquished && !isExpanded.value) {
     mountSquished = true
-    setTimeout(() => triggerLandingSquish(), 45)
+    setTimeout(() => triggerLandingSquish(), MOUNT_SQUISH_DELAY_MS)
   }
 })
 
@@ -558,7 +558,7 @@ watch(hasDims, (val) => {
 let prevShowBody = false
 watch(showBody, (val) => {
   if (!prevShowBody && val && !hoveredRef.value) {
-    setTimeout(() => triggerLandingSquish('expand'), 80)
+    setTimeout(() => triggerLandingSquish('expand'), EXPAND_SQUISH_DELAY_MS)
   }
   prevShowBody = val
 })
@@ -571,11 +571,11 @@ watch(() => props.phase, (phase) => {
     const el = wrapperRef.value
     const mirror = el.style.transform?.includes('scaleX(-1)') ? 'scaleX(-1) ' : ''
     shakeCtrl = animate(0, 1, {
-      duration: 0.4,
+      duration: ERROR_SHAKE_DURATION,
       ease: 'easeOut' as any,
       onUpdate: (v: number) => {
         const decay = 1 - v
-        const shake = Math.sin(v * Math.PI * 6) * decay * 3
+        const shake = Math.sin(v * Math.PI * ERROR_SHAKE_FREQUENCY) * decay * ERROR_SHAKE_AMPLITUDE
         el.style.transform = mirror + `translateX(${shake}px)`
       },
       onComplete: () => {
@@ -589,7 +589,7 @@ watch(() => props.phase, (phase) => {
 // Phase 1: expand (delay showBody) or collapse (reverse morph)
 watch(isExpanded, (expanded) => {
   if (expanded) {
-    const delay = prefersReducedMotion.value ? 0 : 330
+    const delay = prefersReducedMotion.value ? 0 : EXPAND_DELAY_MS
     setTimeout(() => { showBody.value = true }, delay)
     return
   }
@@ -619,10 +619,10 @@ watch(isExpanded, (expanded) => {
       : { ...aDims }
 
     const isPreDismiss = preDismissRef.value
-    const collapseDur = 0.9
+    const collapseDur = MORPH_COLLAPSE_DURATION
     const collapseTransition = (isPreDismiss || !useSpring.value)
       ? { duration: collapseDur, ease: SMOOTH_EASE }
-      : { type: 'spring' as const, duration: collapseDur, bounce: bounceVal.value * 0.875 }
+      : { type: 'spring' as const, duration: collapseDur, bounce: bounceVal.value * PILL_BOUNCE_FACTOR }
 
     triggerLandingSquish('collapse')
 
@@ -662,8 +662,8 @@ watch(
     if (dismissTimer) { clearTimeout(dismissTimer); dismissTimer = null }
     if (!showBodyVal || actionSuccessVal || dismissingVal) return
 
-    const expandDelayMs = prefersReducedMotion.value ? 0 : 330
-    const collapseMs = prefersReducedMotion.value ? 10 : (0.9 * 1000)
+    const expandDelayMs = prefersReducedMotion.value ? 0 : EXPAND_DELAY_MS
+    const collapseMs = prefersReducedMotion.value ? 10 : (MORPH_COLLAPSE_DURATION * 1000)
     const displayMs = props.timing?.displayDuration ?? DEFAULT_DISPLAY_DURATION
     const fullDelay = displayMs - expandDelayMs - collapseMs
     progressDelayRef.value = Math.max(fullDelay, 0)
@@ -709,7 +709,7 @@ watch(
     const currentT = morphT
     const startDims = { ...aDims }
     const morphExpandTransition = useSpring.value
-      ? { type: 'spring' as const, duration: 0.9, bounce: bounceVal.value }
+      ? { type: 'spring' as const, duration: MORPH_EXPAND_DURATION, bounce: bounceVal.value }
       : { duration: 0.6, ease: SMOOTH_EASE }
 
     requestAnimationFrame(() => {
@@ -742,13 +742,13 @@ watch([dismissing, showBody], ([d, sb]) => {
     if (!hoveredRef.value && !containerHoveredRef.value) {
       sonnerToast.dismiss(props.toastId!)
     }
-  }, 800)
+  }, DISMISS_AFTER_COLLAPSE_MS)
 })
 
 // Dismiss after action success
 watch([actionSuccess, showBody], ([as, sb]) => {
   if (!props.toastId || !as || sb) return
-  setTimeout(() => sonnerToast.dismiss(props.toastId!), 1200)
+  setTimeout(() => sonnerToast.dismiss(props.toastId!), ACTION_SUCCESS_DISMISS_MS)
 })
 
 // Phase 2: morph from pill → blob
@@ -776,7 +776,7 @@ watch(showBody, (val) => {
     morphCtrl?.stop()
     const startDims = { ...aDims }
     const morphExpandTransition = useSpring.value
-      ? { type: 'spring' as const, duration: 0.9, bounce: bounceVal.value }
+      ? { type: 'spring' as const, duration: MORPH_EXPAND_DURATION, bounce: bounceVal.value }
       : { duration: 0.6, ease: SMOOTH_EASE }
     morphCtrl = animate(0, 1, {
       ...morphExpandTransition,
@@ -811,8 +811,8 @@ watch([showBody, dismissing, actionSuccess], ([sb, d, as]) => {
     headerSquishCtrl = animate(0, 1, {
       ...squishSpring(DEFAULT_EXPAND_DUR, DEFAULT_EXPAND_DUR, bounceVal.value),
       onUpdate: (v: number) => {
-        const scale = 1 - 0.05 * v
-        const pushY = v * 1
+        const scale = 1 - HEADER_SQUISH_SCALE * v
+        const pushY = v * HEADER_SQUISH_PUSH_Y
         el.style.transform = `scale(${scale}) translateY(${pushY}px)`
       },
     })
@@ -825,8 +825,8 @@ watch([showBody, dismissing, actionSuccess], ([sb, d, as]) => {
     headerSquishCtrl = animate(1, 0, {
       ...transition,
       onUpdate: (v: number) => {
-        const scale = 1 - 0.05 * v
-        const pushY = v * 1
+        const scale = 1 - HEADER_SQUISH_SCALE * v
+        const pushY = v * HEADER_SQUISH_PUSH_Y
         el.style.transform = `scale(${scale}) translateY(${pushY}px)`
       },
       onComplete: () => {
@@ -837,7 +837,6 @@ watch([showBody, dismissing, actionSuccess], ([sb, d, as]) => {
 })
 
 // Swipe-to-dismiss
-const SWIPE_THRESHOLD = 100
 let swipeStart: { x: number; y: number } | null = null
 const swipeOffsetX = ref(0)
 let isSwiping = false
@@ -873,14 +872,16 @@ function handleTouchEnd() {
 }
 
 // Action button handler
-function handleActionClick() {
+async function handleActionClick() {
   if (!effectiveAction.value) return
-  if (effectiveAction.value.successLabel) {
-    expandedDimsRef.value = { ...aDims }
-    collapsingRef.value = true
-    actionSuccess.value = effectiveAction.value.successLabel
-  }
-  try { effectiveAction.value.onClick() } catch { /* onClick errors shouldn't block morph-back */ }
+  try {
+    await effectiveAction.value.onClick()
+    if (effectiveAction.value.successLabel) {
+      expandedDimsRef.value = { ...aDims }
+      collapsingRef.value = true
+      actionSuccess.value = effectiveAction.value.successLabel
+    }
+  } catch { /* onClick errors shouldn't trigger success state */ }
 }
 
 function handleMouseEnter() { hoveredRef.value = true; hovered.value = true }
@@ -898,7 +899,7 @@ const wrapperStyle = computed(() => {
   if (swipeOffsetX.value !== 0) {
     const existingTransform = base.transform ?? ''
     base.transform = (existingTransform ? existingTransform + ' ' : '') + `translateX(${swipeOffsetX.value}px)`
-    base.opacity = String(Math.max(0, 1 - Math.abs(swipeOffsetX.value) / (SWIPE_THRESHOLD * 1.5)))
+    base.opacity = String(Math.max(0, 1 - Math.abs(swipeOffsetX.value) / (SWIPE_THRESHOLD * SWIPE_OPACITY_FACTOR)))
     base.transition = 'none'
   }
   return base

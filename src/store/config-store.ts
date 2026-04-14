@@ -67,3 +67,8 @@ export function subscribeAnnouncements(cb: AnnounceCb): () => void {
   _announceSubs.add(cb)
   return () => { _announceSubs.delete(cb) }
 }
+
+export function buildAnnouncementMessage(title: string, description?: unknown): string {
+  if (!description || typeof description !== 'string') return title
+  return `${title}: ${description}`
+}
