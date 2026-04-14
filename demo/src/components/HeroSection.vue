@@ -8,9 +8,18 @@ const emit = defineEmits<{
 
 const heroTitleRef = ref<HTMLElement | null>(null)
 const { copied, copy } = useCopy()
+const version = ref('...')
 
 let observer: IntersectionObserver | null = null
 onMounted(() => {
+  fetch('https://registry.npmjs.org/gooey-toast-vue/latest')
+    .then(res => res.json())
+    .then(data => { 
+      console.log(data)
+      version.value = `v${data.version}`
+    })
+    .catch(() => {})
+
   nextTick(() => {
     if (heroTitleRef.value) {
       observer = new IntersectionObserver(
@@ -27,9 +36,9 @@ onUnmounted(() => { observer?.disconnect() })
 <template>
   <section id="hero" class="text-center max-w-170 mx-auto px-6 pt-16 pb-12 max-sm:px-4 max-sm:pt-10 max-sm:pb-8">
 
-    <div class="inline-flex items-center gap-2 bg-card rounded-full px-3.5 py-1.5 text-[13px] font-medium text-text-secondary mb-6">
-      <span class="w-2 h-2 rounded-full bg-green animate-[pulse-dot_2s_ease-in-out_infinite]" />
-      <span>v0.2.0</span>
+    <div class="inline-flex items-center gap-1.5 bg-card rounded-full px-3.5 py-1.5 text-sm font-medium text-text-secondary mb-6">
+      <span class="mt-1 w-2 h-2 rounded-full bg-green animate-[pulse-dot_2s_ease-in-out_infinite]" />
+      <span>{{ version }}</span>
     </div>
 
     <h1

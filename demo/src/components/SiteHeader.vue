@@ -23,18 +23,9 @@ function scrollTo(id: string) {
       <!-- Logo -->
       <a
         href="#"
-        class="flex items-center gap-2.5 font-display font-bold text-[15px] text-text whitespace-nowrap no-underline"
+        class="flex items-center gap-2.5 font-display font-bold text-xl bg-linear-to-br from-text via-green to-blue bg-clip-text text-transparent whitespace-nowrap no-underline"
         @click.prevent="scrollTo('hero')"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="url(#logo-grad)" />
-          <defs>
-            <linearGradient id="logo-grad" x1="0" y1="0" x2="24" y2="24">
-              <stop stop-color="#6366f1" />
-              <stop offset="1" stop-color="#ec4899" />
-            </linearGradient>
-          </defs>
-        </svg>
         <span>gooey-toast-vue</span>
       </a>
 
