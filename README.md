@@ -1,15 +1,29 @@
 # gooey-toast-vue
 
+<p>
+  <a href="https://gooey-toast-vue.vercel.app/">
+    <img src="https://img.shields.io/badge/docs-live-blue?style=flat-square" alt="Documentation">
+  </a>
+  <a href="https://www.npmjs.com/package/gooey-toast-vue">
+    <img src="https://img.shields.io/npm/v/gooey-toast-vue?style=flat-square" alt="npm">
+  </a>
+  <a href="https://github.com/Tomas-Studio/gooey-toast-vue">
+    <img src="https://img.shields.io/github/license/Tomas-Studio/gooey-toast-vue?style=flat-square" alt="MIT.License">
+  </a>
+</p>
+
 A gooey, morphing toast notification library for Vue 3, powered by [motion-v](https://motion.dev/docs/vue) and [vue-sonner](https://vue-sonner.vercel.app/).
 
 Inspired by [goey-toast](https://github.com/anl331/goey-toast) for React.
+
+🎨 **[View Documentation & Demo](https://gooey-toast-vue.vercel.app/)**
 
 ## Features
 
 - SVG blob morph animation from compact pill to expanded organic shape
 - Spring physics with configurable bounce and stiffness
 - 5 toast types: default, success, error, warning, info
-- Promise toasts with loading &rarr; success/error transitions
+- Promise toasts with loading → success/error transitions
 - Action buttons with success label morphing
 - 4 animation presets: smooth, bouncy, subtle, snappy
 - Progress bar, close button, timestamp
@@ -18,11 +32,101 @@ Inspired by [goey-toast](https://github.com/anl331/goey-toast) for React.
 - Nuxt 3 module included
 - Fully typed with TypeScript
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Setup](#setup)
+  - [Vue 3](#vue-3)
+  - [Nuxt 3](#nuxt-3)
+- [Quick Start](#quick-start)
+- [API Reference](#api-reference)
+  - [Toast Types](#toast-types)
+  - [Toast Examples](#toast-examples)
+  - [Toaster Props](#toaster-props)
+  - [Toast Options](#toast-options)
+- [Advanced Usage](#advanced-usage)
+  - [Composable](#composable)
+  - [Animation Presets](#animation-presets)
+  - [Custom Spring](#custom-spring)
+  - [Custom Styling](#custom-styling)
+- [License](#license)
+
 ## Installation
 
 ```bash
 npm install gooey-toast-vue
 ```
+
+## Setup
+
+### Vue 3
+
+**Option 1: Plugin Registration (Recommended)**
+
+```ts
+import { createApp } from 'vue'
+import { GooeyToastPlugin } from 'gooey-toast-vue'
+import 'gooey-toast-vue/style.css'
+
+const app = createApp(App)
+app.use(GooeyToastPlugin, {
+  position: 'top-right',
+  theme: 'dark',
+  preset: 'bouncy',
+})
+```
+
+**Option 2: Direct Import**
+
+```vue
+<script setup>
+import { GooeyToaster, gooeyToast } from 'gooey-toast-vue'
+import 'gooey-toast-vue/style.css'
+</script>
+
+<template>
+  <div>
+    <GooeyToaster position="bottom-right" />
+  </div>
+</template>
+```
+
+### Nuxt 3 & 4 
+
+**1. Add module to `nuxt.config.ts`**
+
+```ts
+export default defineNuxtConfig({
+  modules: ['gooey-toast-vue/nuxt'],
+})
+```
+
+**2. Add `<GooeyToaster>` to your layout**
+
+```vue
+<!-- layouts/default.vue -->
+<template>
+  <div>
+    <slot />
+    <GooeyToaster position="bottom-right" />
+  </div>
+</template>
+```
+
+**3. Use anywhere**
+
+```vue
+<script setup>
+// gooeyToast is auto-imported by the Nuxt module
+gooeyToast.success('It works!')
+</script>
+```
+
+The Nuxt module automatically:
+- Imports the CSS stylesheet
+- Registers `GooeyToaster` as a global component
+- Auto-imports `gooeyToast` and `useGooeyToast`
+- Marks the plugin as client-only (SSR safe)
 
 ## Quick Start
 
@@ -42,7 +146,9 @@ import 'gooey-toast-vue/style.css'
 </template>
 ```
 
-## Toast Types
+## API Reference
+
+### Toast Types
 
 ```ts
 import { gooeyToast } from 'gooey-toast-vue'
@@ -54,7 +160,9 @@ gooeyToast.warning('Please review your input')
 gooeyToast.info('New update available')
 ```
 
-## With Description
+### Toast Examples
+
+#### With Description
 
 ```ts
 gooeyToast.success('File uploaded', {
@@ -62,7 +170,7 @@ gooeyToast.success('File uploaded', {
 })
 ```
 
-## Action Button
+#### Action Button
 
 ```ts
 gooeyToast.error('Failed to save', {
@@ -75,7 +183,7 @@ gooeyToast.error('Failed to save', {
 })
 ```
 
-## Promise Toasts
+#### Promise Toasts
 
 ```ts
 gooeyToast.promise(fetchData(), {
@@ -90,7 +198,7 @@ gooeyToast.promise(fetchData(), {
 })
 ```
 
-## Update Toast
+#### Update Toast
 
 ```ts
 const id = gooeyToast('Uploading...', { duration: Infinity })
@@ -103,7 +211,7 @@ gooeyToast.update(id, {
 })
 ```
 
-## Dismiss
+#### Dismiss
 
 ```ts
 // Dismiss specific toast
@@ -113,19 +221,7 @@ gooeyToast.dismiss(id)
 gooeyToast.dismiss()
 ```
 
-## Composable
-
-```vue
-<script setup>
-import { useGooeyToast } from 'gooey-toast-vue'
-
-const { toast, dismiss, update } = useGooeyToast()
-
-toast.success('Hello!')
-</script>
-```
-
-## Toaster Props
+### Toaster Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -143,7 +239,7 @@ toast.success('Hello!')
 | `closeOnEscape` | `boolean` | `true` | Dismiss on Escape key |
 | `dir` | `'ltr' \| 'rtl'` | `'ltr'` | Text direction |
 
-## Toast Options
+### Toast Options
 
 | Option | Type | Description |
 |--------|------|-------------|
@@ -163,7 +259,21 @@ toast.success('Hello!')
 | `timing` | `GooeyToastTimings` | Fine-grained timing control |
 | `classNames` | `GooeyToastClassNames` | CSS class overrides |
 
-## Animation Presets
+## Advanced Usage
+
+### Composable
+
+```vue
+<script setup>
+import { useGooeyToast } from 'gooey-toast-vue'
+
+const { toast, dismiss, update } = useGooeyToast()
+
+toast.success('Hello!')
+</script>
+```
+
+### Animation Presets
 
 ```ts
 gooeyToast.success('Saved', { preset: 'smooth' })
@@ -178,7 +288,7 @@ Or configure globally:
 <GooeyToaster preset="bouncy" />
 ```
 
-## Custom Spring
+### Custom Spring
 
 ```ts
 gooeyToast.success('Saved', {
@@ -187,7 +297,7 @@ gooeyToast.success('Saved', {
 })
 ```
 
-## Custom Styling
+### Custom Styling
 
 ```ts
 gooeyToast.info('Custom styled', {
@@ -208,64 +318,6 @@ gooeyToast('Hello', {
   },
 })
 ```
-
-## Vue Plugin
-
-```ts
-import { createApp } from 'vue'
-import { GooeyToastPlugin } from 'gooey-toast-vue'
-import 'gooey-toast-vue/style.css'
-
-const app = createApp(App)
-app.use(GooeyToastPlugin, {
-  position: 'top-right',
-  theme: 'dark',
-  preset: 'bouncy',
-})
-```
-
-## Nuxt Integration
-
-### 1. Install
-
-```bash
-npm install gooey-toast-vue
-```
-
-### 2. Add module to `nuxt.config.ts`
-
-```ts
-export default defineNuxtConfig({
-  modules: ['gooey-toast-vue/nuxt'],
-})
-```
-
-### 3. Add `<GooeyToaster>` to your layout
-
-```vue
-<!-- layouts/default.vue -->
-<template>
-  <div>
-    <slot />
-    <GooeyToaster position="bottom-right" />
-  </div>
-</template>
-```
-
-### 4. Use anywhere
-
-```vue
-<script setup>
-// gooeyToast is auto-imported by the Nuxt module
-gooeyToast.success('It works!')
-</script>
-```
-
-The Nuxt module automatically:
-- Imports the CSS stylesheet
-- Registers `GooeyToaster` as a global component
-- Auto-imports `gooeyToast` and `useGooeyToast`
-- Marks the plugin as client-only (SSR safe)
 
 ## License
 
