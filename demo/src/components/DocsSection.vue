@@ -187,13 +187,11 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
   <section id="docs" class="border-t border-border max-w-300 mx-auto px-6 py-16 max-sm:px-4 max-sm:py-10">
     <h2 class="font-display text-[28px] max-sm:text-2xl font-bold mb-10">Documentation</h2>
 
-    <!-- 01. Quick Start -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Quick Start</h3>
       <CodeBlock :code="codeQuickStart" />
     </div>
 
-    <!-- 02. Toast Types -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Toast Types</h3>
       <CodeBlock :code="codeTypes" />
@@ -207,7 +205,6 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 03. Description -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Description</h3>
       <CodeBlock :code="codeDescription" />
@@ -217,7 +214,6 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 04. Action Button -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Action Button</h3>
       <CodeBlock :code="codeAction" />
@@ -227,7 +223,6 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 05. Promise Toasts -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Promise Toasts</h3>
       <CodeBlock :code="codePromise" />
@@ -238,13 +233,11 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 06. Timings -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Timings</h3>
       <PropTable :columns="['Property', 'Type', 'Default', 'Description']" :rows="timingsRows" />
     </div>
 
-    <!-- 07. Toaster Props -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Toaster Props</h3>
       <CodeBlock :code="codeToasterProps" />
@@ -253,13 +246,11 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 08. Toast Options -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Toast Options</h3>
       <PropTable :columns="['Option', 'Type', 'Default', 'Description']" :rows="optionRows" />
     </div>
 
-    <!-- 09. Methods -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Methods</h3>
       <h4 class="font-display text-base font-semibold mb-3">Dismiss</h4>
@@ -274,7 +265,6 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 10. Custom Styling -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Custom Styling</h3>
       <CodeBlock :code="codeCustomStyle" />
@@ -283,7 +273,6 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 11. Spring Animation -->
     <div class="py-8 border-b border-border-subtle">
       <h3 class="font-display text-lg font-bold mb-4">Spring Animation</h3>
       <CodeBlock :code="codeSpring" />
@@ -294,7 +283,6 @@ const tryPillClass = 'inline-flex items-center px-3.5 py-1.5 rounded-full text-[
       </div>
     </div>
 
-    <!-- 12. Nuxt Integration -->
     <div class="py-8">
       <h3 class="font-display text-lg font-bold mb-4">Nuxt Integration</h3>
       <CodeBlock :code="codeNuxt" />

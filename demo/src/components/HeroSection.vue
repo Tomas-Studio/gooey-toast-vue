@@ -43,7 +43,7 @@ onUnmounted(() => { observer?.disconnect() })
 
     <h1
       ref="heroTitleRef"
-      class="font-display text-5xl max-sm:text-[28px] font-extrabold leading-tight tracking-tight mb-4 bg-linear-to-br from-text via-green to-blue bg-clip-text text-transparent"
+      class="font-display text-5xl max-sm:text-[28px] font-extrabold leading-tight tracking-tight mb-4 bg-linear-to-r from-text via-green-500 to-sky-600 bg-clip-text text-transparent"
     >
       gooey-toast-vue
     </h1>
@@ -52,8 +52,8 @@ onUnmounted(() => { observer?.disconnect() })
       Beautiful, gooey toast notifications for Vue 3. Smooth spring animations powered by motion-v.
     </p>
 
-    <div class="inline-flex items-center gap-2 bg-surface border border-border rounded-[10px] shadow-sm font-mono text-[13.5px] text-text px-3 py-1.5 max-w-full">
-      <code class="whitespace-nowrap overflow-hidden text-ellipsis">npm install gooey-toast-vue</code>
+    <div class="inline-flex items-center gap-2 bg-surface border border-border rounded-[10px] shadow-sm font-mono text-[13.5px] text-text pl-3 pr-1 py-1 max-w-full">
+      <code class="whitespace-nowrap overflow-hidden text-ellipsis">$ npm install gooey-toast-vue</code>
       <button
         class="w-8 h-8 rounded-lg shrink-0 inline-flex items-center justify-center text-text-muted hover:text-text hover:bg-card transition-all cursor-pointer"
         @click="copy('npm install gooey-toast-vue')"

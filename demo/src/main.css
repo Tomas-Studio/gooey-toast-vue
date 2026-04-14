@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Limelight:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fascinate:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Megrim:wght@400&display=swap');
 @import "tailwindcss";
 @import "./base.css" layer(base);
 
@@ -22,7 +25,7 @@
   --color-blue: #1565C0;
   --color-blue-soft: #E3F2FD;
 
-  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-display: 'Megrim', sans-serif;
   --font-body: 'DM Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 

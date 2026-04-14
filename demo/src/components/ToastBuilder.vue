@@ -185,10 +185,11 @@ const pillActive = 'bg-accent text-surface'
   </div>
 </template>
 
-<style scoped>
+<style>
 .range-input {
   -webkit-appearance: none;
   appearance: none;
+  background: transparent;
   height: 4px;
   border-radius: 2px;
   outline: none;
@@ -198,11 +199,16 @@ const pillActive = 'bg-accent text-surface'
 .range-input::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
+  background: linear-gradient(to right, #ddd 0%, #ddd 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .range-input::-moz-range-track {
   height: 4px;
   border-radius: 2px;
+  background: linear-gradient(to right, #ddd 0%, #ddd 100%);
+  border: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .range-input::-webkit-slider-thumb {
@@ -212,6 +218,9 @@ const pillActive = 'bg-accent text-surface'
   height: 16px;
   border-radius: 50%;
   margin-top: -5px;
+  background: #333;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .range-input::-moz-range-thumb {
@@ -219,5 +228,8 @@ const pillActive = 'bg-accent text-surface'
   height: 14px;
   border-radius: 50%;
   border: none;
+  background: #333;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 </style>

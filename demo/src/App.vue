@@ -16,12 +16,11 @@ const heroVisible = ref(true)
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <main class="min-h-screen">
     <SiteHeader :hero-visible="heroVisible" />
 
     <HeroSection @update:hero-visible="heroVisible = $event" />
 
-    <!-- Two-column layout: Examples + Builder -->
     <section class="grid grid-cols-1 md-lg:grid-cols-[5fr_7fr] gap-8 md-lg:gap-12 max-w-300 mx-auto px-6 max-sm:px-4 pb-16 pt-12 border-t border-border">
       <ExamplesPanel />
       <ToastBuilder />
@@ -41,5 +40,5 @@ const heroVisible = ref(true)
       :show-progress="bShowProgress"
       :close-on-escape="bCloseOnEscape"
     />
-  </div>
+  </main>
 </template>

@@ -20,10 +20,9 @@ const typeHandlers: Record<string, () => void> = {
 </script>
 
 <template>
-  <div id="examples" class="flex flex-col gap-6 md-lg:sticky md-lg:top-20 md-lg:self-start md-lg:max-h-[calc(100vh-56px-48px)] md-lg:overflow-y-auto">
+  <div id="examples" class="flex flex-col gap-6 md-lg:sticky md-lg:top-20 md-lg:self-start">
     <h2 class="font-display text-xl font-bold">Examples</h2>
 
-    <!-- Toast Types -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">Toast Types</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -39,7 +38,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- With Description -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">With Description</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -48,7 +46,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- With Action Button -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">With Action Button</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -57,7 +54,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- No Spring -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">No Spring</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -67,7 +63,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- Promise -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">Promise</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -78,7 +73,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- Update Toast -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">Update Toast</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -86,7 +80,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- Progress Bar -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">Progress Bar</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -94,7 +87,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- Callbacks -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">Callbacks</h3>
       <div class="flex flex-wrap gap-1.5">
@@ -102,7 +94,6 @@ const typeHandlers: Record<string, () => void> = {
       </div>
     </div>
 
-    <!-- Dismiss -->
     <div>
       <h3 class="text-[13px] font-semibold text-text-muted uppercase tracking-wider mb-2">Dismiss</h3>
       <div class="flex flex-wrap gap-1.5">

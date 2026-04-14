@@ -19,11 +19,11 @@ function scrollTo(id: string) {
     class="sticky top-0 z-50 h-14 bg-bg/80 backdrop-blur-md border-b border-border-subtle transition-shadow"
     :class="{ 'shadow-sm': !heroVisible }"
   >
-    <div class="flex items-center justify-between h-full px-6 max-md-lg:px-4">
+    <div class="flex items-center justify-between h-full max-w-300 mx-auto px-6 max-sm:px-4">
       <!-- Logo -->
       <a
         href="#"
-        class="flex items-center gap-2.5 font-display font-bold text-xl bg-linear-to-br from-text via-green to-blue bg-clip-text text-transparent whitespace-nowrap no-underline"
+        class="flex items-center gap-2.5 font-display font-bold text-xl bg-linear-to-r from-text via-green-500 to-sky-600 bg-clip-text text-transparent whitespace-nowrap no-underline"
         @click.prevent="scrollTo('hero')"
       >
         <span>gooey-toast-vue</span>

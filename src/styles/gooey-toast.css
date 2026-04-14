@@ -44,6 +44,7 @@
   --gooey-text-muted: #999999;
 
   /* Description */
+  --gooey-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   --gooey-description-color: #444444;
 
   /* Timestamp */
@@ -171,7 +172,7 @@
 .gooey-wrapper {
   pointer-events: auto;
   cursor: default;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--gooey-font-family);
   position: relative;
   width: fit-content;
 }
